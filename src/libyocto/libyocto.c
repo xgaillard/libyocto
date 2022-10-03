@@ -19,7 +19,6 @@
 #endif
 #endif
 
-
 #if defined(LIBYOCTO_DIGITAL_INPUT_GPIO) || defined(LIBYOCTO_DIGITAL_OUTPUT_GPIO)
 #include "gpio.h"
 #endif
@@ -352,13 +351,13 @@ int yoctoConfigSnmp(const char* user, const char* auth, const char* priv, const 
     int rc = 0;
 
     //Stop snmpd
-    if ((rc = serviceManage("snmpd.service", "stop") >= 0)) {
+    if ((rc = yoctoServiceStop(CONFIG_SNMP_SERVICE) >= 0)) {
         //Save user
         rc = configSnmpWrite(user, auth, priv, view);
     }
 
     //Start snmpd
-    if (serviceManage("snmpd.service", "start") < 0) {
+    if (yoctoServiceStart(CONFIG_SNMP_SERVICE) < 0) {
         return -1;
     }
 
