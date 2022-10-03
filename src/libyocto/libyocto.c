@@ -159,14 +159,8 @@ int yoctoDigitalOutputWrite(int id, uint8_t on)
 #else
     return gpioOutputWrite(id, on);
 #endif
-#elseNETWORK
-#ifdef LIBYOCTO_LED_RBOX630
-    return ledRboxSet(LED_RBOX_ALARM, 0);
 #else
-    return ledSysSetTrigger(LIBYOCTO_LED_ALARM_FILENAME, LED_SYSFS_TRIGGER_NONE);
-#endif
-#else
-    (void )id;(void )on;
+    (void)id; (void)on;
     return -1;
 #endif
 }
