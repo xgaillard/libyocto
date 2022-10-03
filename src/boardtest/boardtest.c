@@ -403,6 +403,13 @@ int main()
 
     if (status >= 0)
     {
+#ifdef LIBYOCTO_NETWORK
+    yoctoConfigSnmp("blop", "blop1111", "blop2222", "rad");
+#endif
+    }
+ /*
+    if (status >= 0)
+    {
         printf("Enter x to exit\n");
 
         int index = 0;
@@ -418,15 +425,6 @@ int main()
                 printBinary(data);
             }
             // printf("data=0X%02X", data);
-            /*
-                        for (int index = 0; index < 3; index++)
-                        {
-                            if (yoctoDigitalInputRead(index, &data) == 0)
-                            {
-                                printf("%d:%d\n", index, data);
-                            }
-                        }
-                        */
 
             printf("---OUTPUT ALL---\n");
 
@@ -477,6 +475,7 @@ int main()
 
         yoctoUninit();
     }
+*/
 
     return status;
 }

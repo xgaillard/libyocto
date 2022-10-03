@@ -12,7 +12,16 @@
 //TODO Add eeprom
 //TODO Add checkAxiomtek
 
+/**
+ * Initialize the library.
+ * \returns 0 if ok, -1 if error.
+ */
 int yoctoInit();
+
+/**
+ * Uninitialize the library.
+ * 
+ */
 void yoctoUninit();
 
 //---------- LOG ----------
@@ -222,9 +231,7 @@ int yoctoServiceNbRestart(const char *service, uint32_t *count);
  */
 int yoctoServiceSetTime(int64_t timestampMicroSecond);
 
-//---------- CONFIG ----------
-
-//TODO Add chrony configuration
+//---------- CONFIG NETWORK ----------
 
 /**
  * Reads the configuration of a network interface.
@@ -246,6 +253,8 @@ int yoctoConfigNetworkRead(const char *interface, char *cidrAddress, size_t cidr
  */
 int yoctoConfigNetworkWrite(const char *interface, const char *cidrAddress, const char *gateway);
 
+//---------- CONFIG WIFI ----------
+
 /**
  * Reads the configuration of the wifi access point.
  * \param[out]  ssid            Ip address with cidr mask (X.X.X.X/XX)
@@ -263,5 +272,41 @@ int yoctoConfigWifiRead(char *ssid, size_t ssidLen, char *passphrase, size_t pas
 * \returns 0 if ok, -1 if error.
  */
 int yoctoConfigWifiWrite(const char *ssid, const char *passphrase);
+
+//---------- CONFIG NTP ----------
+
+/**
+ * Writes the configuration of the ntp client.
+ * \param[in]   ip              Ip address (NULL to disable)
+ * \param[in]   keyIndex        Index of the key to use (0 if no key)
+* \returns 0 if ok, -1 if error.
+ */
+int yoctoConfigNtpServer(const char *ip, const int keyIndex);
+
+/**
+ * Writes the keyfile of the ntp client.
+ * \param[in]   content         Content of the keyfile
+* \returns 0 if ok, -1 if error.
+ */
+int yoctoConfigNtpKeyfile(const char *content);
+
+/**
+ * Checks if ntp is enabled
+ * \param[out]  yes             0 if disabled, 1 if enabled
+* \returns 0 if ok, -1 if error.
+ */
+int yoctoConfigNtpIsEnabled(uint8_t * yes);
+
+//---------- CONFIG SNMP ----------
+
+/**
+ * Set the v3 user for the snmp server
+ * \param[in]   user            Username
+ * \param[in]   auth            Authentification password
+ * \param[in]   priv            Private password
+ * \param[in]   mib             Name of the authorized view  for the user
+* \returns 0 if ok, -1 if error.
+ */
+int yoctoConfigSnmp(const char* user, const char* auth, const char* priv, const char* view); 
 
 #endif // LIBYOCTO_H

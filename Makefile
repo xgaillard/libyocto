@@ -1,3 +1,5 @@
+#FIXME Use CPPFLAGS, LDLIBS
+
 LIBYOCTO = yocto
 LIBYOCTO_MAJOR = 0
 LIBYOCTO_MINOR = 1.0
@@ -10,7 +12,7 @@ TARGET_LIBYOCTO = lib${LIBYOCTO}
 TARGET_BOARDTEST = boardtest
 TARGET_SETLED = setled
 
-MACHINES = RBOX630 GWS501 RADIPV3
+MACHINES = AMD64 RBOX630 GWS501 RADIPV3
 ifneq ($(filter $(MACHINES), $(MACHINE)), )
     $(info Building for machine: $(MACHINE))
 	CFLAGS += -D$(MACHINE)
@@ -21,13 +23,12 @@ endif
 SRC_DIR = src
 BUILD_DIR = build/$(MACHINE)
 OBJ_DIR = $(BUILD_DIR)/.obj
-DEP_DIR = $(BUILD_DIR)/.dep
 BIN_DIR = $(BUILD_DIR)/bin
 LIB_DIR = $(BUILD_DIR)/lib
 
 CFLAGS_COMMON = $(CFLAGS) -Wall -Wextra -pedantic -O2 -g -MMD -MP
-
 CFLAGS_LIBYOCTO = $(CFLAGS_COMMON) -fPIC `pkg-config --cflags glib-2.0` -I $(SRC_DIR)/$(TARGET_LIBYOCTO) -I $(SRC_DIR)/$(TARGET_LIBYOCTO)/rbox
+
 LDFLAGS_LIBYOCTO = $(LDFLAGS) -shared -Wl,-soname,${LIBYOCTO_SONAME} -lpthread -lsystemd `pkg-config --libs glib-2.0`
 ifeq ($(MACHINE), RBOX630)
 	LDFLAGS_LIBYOCTO += -li2c -lgpiod
@@ -47,8 +48,7 @@ LN = ln -fsr
 
 SRCS = $(sort $(shell find $(SRC_DIR) -name '*.c'))
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-DEPS = $(OBJS:$(OBJ_DIR)/%.o=%.d)
-#FIXME Add dependency on the lib for executables
+DEPS = $(OBJS:$(OBJ_DIR)/%.o=$(OBJ_DIR)/%.d)
 
 getSources = $(SRC_DIR)/$(1)/%.c
 getObjects = $(filter $(OBJ_DIR)/$(1)/%.o , $(OBJS))

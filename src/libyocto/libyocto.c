@@ -4,7 +4,21 @@
 #include "logger.h"
 #include "daemon.h"
 #include "service.h"
-#include "config.h"
+
+#ifdef LIBYOCTO_NETWORK
+#include "config/config_network.h"
+#endif
+
+#ifdef LIBYOCTO_WIFI
+#include "config/config_wifi.h"
+#endif
+
+#if defined(LIBYOCTO_NETWORK) || defined(LIBYOCTO_WIFI)
+#ifdef LIBYOCTO_SNMP
+#include "config/config_snmp.h"
+#endif
+#endif
+
 
 #if defined(LIBYOCTO_DIGITAL_INPUT_GPIO) || defined(LIBYOCTO_DIGITAL_OUTPUT_GPIO)
 #include "gpio.h"
@@ -145,23 +159,14 @@ int yoctoDigitalOutputWrite(int id, uint8_t on)
 #else
     return gpioOutputWrite(id, on);
 #endif
-#else
-    (void)id; (void)on;
-    return -1;
-#endif
-}
-
-//---------- LEDS ----------
-
-int yoctoLedAlarmOff()
-{
-#ifdef LIBYOCTO_LED_ALARM
+#elseNETWORK
 #ifdef LIBYOCTO_LED_RBOX630
     return ledRboxSet(LED_RBOX_ALARM, 0);
 #else
     return ledSysSetTrigger(LIBYOCTO_LED_ALARM_FILENAME, LED_SYSFS_TRIGGER_NONE);
 #endif
 #else
+    (void )id;(void )on;
     return -1;
 #endif
 }
@@ -279,17 +284,29 @@ int yoctoServiceSetTime(int64_t timestampMicroSecond)
     return serviceSetTime(timestampMicroSecond);
 }
 
-//---------- CONFIG ----------
+//---------- CONFIG NETWORK ----------
 
 int yoctoConfigNetworkRead(const char *interface, char *cidrAddress, size_t cidrAddressLen, char *gateway, size_t gatewayLen)
 {
+#ifdef LIBYOCTO_NETWORK
     return configNetworkRead(interface, cidrAddress, cidrAddressLen, gateway, gatewayLen);
+#else
+    (void)interface;(void)cidrAddress;(void)cidrAddressLen;(void)gateway;(void)gatewayLen;
+    return -1;
+#endif
 }
 
 int yoctoConfigNetworkWrite(const char *interface, const char *cidrAddress, const char *gateway)
 {
+#ifdef LIBYOCTO_NETWORK
     return configNetworkWrite(interface, cidrAddress, gateway);
+#else
+    (void)interface;(void)cidrAddress;(void)gateway;
+    return -1;
+#endif
 }
+
+//---------- CONFIG WIFI ----------
 
 int yoctoConfigWifiRead(char *ssid, size_t ssidLen, char *passphrase, size_t passphraseLen)
 {
@@ -307,6 +324,53 @@ int yoctoConfigWifiWrite(const char *ssid, const char *passphrase)
     return configWifiWrite(ssid, passphrase);
 #else
     (void)ssid;(void)passphrase;
+    return -1;
+#endif
+}
+
+//---------- CONFIG NTP ----------
+
+int yoctoConfigNtpServer(const char *ip, const int key)
+{
+    (void)ip; (void)key; 
+    //return configNtpWrite(ip, key);
+    return -1;
+}
+
+int yoctoConfigNtpKeyfile(const char *content)
+{
+    (void)content;
+    //return configNtpKeysWrite(content);
+    return -1;
+}
+
+int yoctoConfigNtpIsEnabled(uint8_t *yes)
+{
+    *yes = 0;
+    return 0;
+}
+
+//---------- CONFIG SNMP ----------
+
+int yoctoConfigSnmp(const char* user, const char* auth, const char* priv, const char* view)
+{
+#ifdef LIBYOCTO_SNMP
+    int rc = 0;
+
+    //Stop snmpd
+    if ((rc = serviceManage("snmpd.service", "stop") >= 0)) {
+        //Save user
+        rc = configSnmpWrite(user, auth, priv, view);
+    }
+
+    //Start snmpd
+    if (serviceManage("snmpd.service", "start") < 0) {
+        return -1;
+    }
+
+    return rc;
+#else
+    (void)user;(void)auth;(void)priv;(void)view;
     return -1;
 #endif
 }

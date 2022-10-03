@@ -12,6 +12,8 @@
 #define LOGGER(a, ...) logger(__FILE__, __LINE__, a, __VA_ARGS__)
 #define LOGGER_ERROR(a, b) loggerErrorCode(__FILE__, __LINE__, a, b)
 
+#define LOGGER_ERROR_GLIB(error, msg) LOGGER(LOGGER_LEVEL_ERROR, "(Glib %d) %s: %s)", (error)->code, (error)->message, msg)
+
 void loggerSetLevel(int level);
 
 void logger(const char *file, size_t line, int level, const char *fmt, ...);

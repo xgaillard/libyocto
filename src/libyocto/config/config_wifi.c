@@ -1,21 +1,15 @@
-#include "config.h"
+#include "config_wifi.h"
 #include "logger.h"
 #include "libyocto_config.h"
 
-#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
+#include <string.h>
+#include <unistd.h>
 #include <assert.h>
-#include <glib.h>
+#include <stdlib.h>
 
-#define CONFIG_NETWORK_DIR "/etc/systemd/network/"
-#define CONFIG_NETWORK_FILENAME_MAXLEN 64
-
-#define CONFIG_NETWORK_GROUP_NETWORK "Network"
-#define CONFIG_NETWORK_KEY_ADDRESS "Address"
-#define CONFIG_NETWORK_KEY_GATEWAY "Gateway"
+#define CONFIG_BUFFER_SIZE 4096
 
 #define CONFIG_WIFI_DIR "/etc/"
 #define CONFIG_WIFI_FILENAME "hostapd.conf"
@@ -24,145 +18,10 @@
 #define CONFIG_WIFI_TMP_FILE_PATH "/tmp/" CONFIG_WIFI_FILENAME "-XXXXXX"
 #define CONFIG_WIFI_TMP_FILE_PATH_LEN (5 + CONFIG_WIFI_FILENAME_LEN + 7)
 
-#define CONFIG_WIFI_VARIABLE_SSID "ssid"
-#define CONFIG_WIFI_VARIABLE_SSID_LEN 4
-#define CONFIG_WIFI_VARIABLE_PASSPHRASE "wpa_passphrase"
+#define CONFIG_WIFI_VARIABLE_SSID           "ssid"
+#define CONFIG_WIFI_VARIABLE_SSID_LEN       4
+#define CONFIG_WIFI_VARIABLE_PASSPHRASE     "wpa_passphrase"
 #define CONFIG_WIFI_VARIABLE_PASSPHRASE_LEN 14
-
-#define CONFIG_BUFFER_SIZE 4096
-
-#define LOGGER_ERROR_GLIB(error, msg) LOGGER(LOGGER_LEVEL_ERROR, "(Glib %d) %s: %s)", (error)->code, (error)->message, msg)
-
-static int _configNetworkGetFilename(const char *interface, char *filename)
-{
-    if (strcmp(interface, "eth0") == 0)
-    {
-        strcat(filename, LIBYOCTO_NETWORK_ETH0_FILENAME);
-    }
-#ifdef LIBYOCTO_NETWORK_ETH1_FILENAME
-    else if (strcmp(interface, "eth1") == 0)
-    {
-        strcat(filename, LIBYOCTO_NETWORK_ETH1_FILENAME);
-    }
-#endif // LIBYOCTO_NETWORK_ETH1_FILENAME
-#ifdef LIBYOCTO_NETWORK_WLAN0_FILENAME
-    else if (strcmp(interface, "wlan0") == 0)
-    {
-        strcat(filename, LIBYOCTO_NETWORK_WLAN0_FILENAME);
-    }
-#endif // LIBYOCTO_NETWORK_WLAN0_FILENAME
-    else
-    {
-        LOGGER(LOGGER_LEVEL_WARNING, "Unknown interface %s", interface);
-        return -1;
-    }
-
-    return 0;
-}
-
-int configNetworkWrite(const char *interface, const char *cidrAddress, const char *gateway)
-{
-    assert(interface);
-
-    char filename[CONFIG_NETWORK_FILENAME_MAXLEN] = CONFIG_NETWORK_DIR;
-    if (_configNetworkGetFilename(interface, filename) < 0)
-    {
-        return -1;
-    }
-
-    g_autoptr(GError) error = NULL;
-    g_autoptr(GKeyFile) keyfile = g_key_file_new();
-
-    if (!g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS, &error))
-    {
-        LOGGER_ERROR_GLIB(error, filename);
-        return -1;
-    }
-
-    int needToWrite = 0;
-
-    if (cidrAddress[0] != '\0')
-    {
-        g_key_file_set_string(keyfile, CONFIG_NETWORK_GROUP_NETWORK, CONFIG_NETWORK_KEY_ADDRESS, cidrAddress);
-        needToWrite |= 1;
-    }
-    if (gateway[0] != '\0')
-    {
-        g_key_file_set_string(keyfile, CONFIG_NETWORK_GROUP_NETWORK, CONFIG_NETWORK_KEY_GATEWAY, gateway);
-        needToWrite |= 1;
-    }
-    else
-    {
-        g_key_file_remove_key(keyfile, CONFIG_NETWORK_GROUP_NETWORK, CONFIG_NETWORK_KEY_GATEWAY, NULL);
-        needToWrite |= 1;
-    }
-    if (needToWrite && !g_key_file_save_to_file(keyfile, filename, &error))
-    {
-        LOGGER_ERROR_GLIB(error, filename);
-        return -1;
-    }
-
-    return 0;
-}
-
-static int _configNetworkGetValue(GKeyFile *keyfile, const char *group, const char *key, GError *error, char *value, size_t len)
-{
-    g_autofree gchar *result = g_key_file_get_string(keyfile, group, key, &error);
-
-    if (result == NULL)
-    {
-        value[0] = '\0';
-        LOGGER(LOGGER_LEVEL_WARNING, "Group '%s' does not contain key '%s'", group, key);
-    }
-    else
-    {
-        size_t resultLen = strlen(result);
-        if (len < resultLen)
-        {
-            LOGGER(LOGGER_LEVEL_ERROR, "Size of buffer too short (%ld/%ld) for key: %s", len, resultLen, key);
-            return -1;
-        }
-
-        strcpy(value, result);
-    }
-
-    return 0;
-}
-
-int configNetworkRead(const char *interface, char *cidrAddress, size_t cidrAddressLen, char *gateway, size_t gatewayLen)
-{
-    assert(interface);
-
-    char filename[CONFIG_NETWORK_FILENAME_MAXLEN] = CONFIG_NETWORK_DIR;
-
-    if (_configNetworkGetFilename(interface, filename) < 0)
-    {
-        return -1;
-    }
-
-    g_autoptr(GError) error = NULL;
-    g_autoptr(GKeyFile) keyfile = g_key_file_new();
-
-    if (!g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS, &error))
-    {
-        LOGGER_ERROR_GLIB(error, filename);
-        return -1;
-    }
-
-    if (_configNetworkGetValue(keyfile, CONFIG_NETWORK_GROUP_NETWORK, CONFIG_NETWORK_KEY_ADDRESS, error, cidrAddress, cidrAddressLen) < 0)
-    {
-        return -1;
-    }
-
-    if (_configNetworkGetValue(keyfile, CONFIG_NETWORK_GROUP_NETWORK, CONFIG_NETWORK_KEY_GATEWAY, error, gateway, gatewayLen) < 0)
-    {
-        return -1;
-    }
-
-    return 0;
-}
-
-//---------- Wifi ----------
 
 int _configCopyTmpFile(int tmpFileDescriptor, const char *tmpFilename, const char *destFilename)
 {
@@ -311,7 +170,6 @@ int configWifiWrite(const char *ssid, const char *passphrase)
 
     // FIXME Check ssid and passphrase
     size_t passphraseLen = strlen(passphrase);
-
     if (passphraseLen < 8 || passphraseLen > 63)
     {
         return -1;

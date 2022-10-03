@@ -23,7 +23,19 @@
 // --------------------------------------------
 // Machine specific
 // --------------------------------------------
-#if defined(RBOX630)
+
+#if defined(AMD64)
+#undef LIBYOCTO_WIFI
+
+#undef LIBYOCTO_DIGITAL_INPUT_GPIO
+#undef LIBYOCTO_DIGITAL_OUTPUT_GPIO
+
+#undef LIBYOCTO_LED_SYSFS
+#undef LIBYOCTO_LED_STATUS
+#undef LIBYOCTO_LED_ALARM
+#undef LIBYOCTO_LED_WIFI
+
+#elif defined(RBOX630)
 #define LIBYOCTO_NETWORK_ETH0_FILENAME      "20-eth0.network"
 #define LIBYOCTO_NETWORK_ETH1_FILENAME      "30-eth1.network"
 #define LIBYOCTO_NETWORK_WLAN0_FILENAME     "40-wlan0.network"
@@ -62,6 +74,10 @@
 // Aggregates
 // --------------------------------------------
 
+#if defined(LIBYOCTO_NETWORK) || defined(LIBYOCTO_WIFI)
+#define LIBYOCTO_SNMP
+#endif
+
 #if defined(LIBYOCTO_DIGITAL_INPUT_GPIO)
 #define LIBYOCTO_DIGITAL_INPUT
 #endif
@@ -89,4 +105,5 @@
 #error "LIBYOCTO_LED_WIFI* is defined but no filename is provided"
 #endif
 */
+
 #endif // LIBYOCTO_CONFIG_H
