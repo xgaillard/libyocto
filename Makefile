@@ -91,11 +91,11 @@ $(LIB_DIR)/${LIBYOCTO_FULLNAME}: $(call getObjects,$(TARGET_LIBYOCTO))
 	@mkdir -p $(@D)
 	$(CC) $^ $(LDFLAGS_LIBYOCTO) -o $@
 
-$(BIN_DIR)/$(TARGET_BOARDTEST): $(call getObjects,$(TARGET_BOARDTEST))
+$(BIN_DIR)/$(TARGET_BOARDTEST): $(call getObjects,$(TARGET_BOARDTEST)) $(LIB_DIR)/${LIBYOCTO_NAME}
 	@mkdir -p $(@D)
 	$(CC) $^ $(LDFLAGS_BOARDTEST) -o $@
 
-$(BIN_DIR)/$(TARGET_SETLED): $(call getObjects,$(TARGET_SETLED))
+$(BIN_DIR)/$(TARGET_SETLED): $(call getObjects,$(TARGET_SETLED)) $(LIB_DIR)/${LIBYOCTO_NAME}
 	@mkdir -p $(@D)
 	$(CC) $^ $(LDFLAGS_SETLED) -o $@
 
@@ -104,11 +104,11 @@ $(OBJ_DIR)/$(TARGET_LIBYOCTO)/%.o: $(call getSources,$(TARGET_LIBYOCTO))
 	@mkdir -p $(@D)
 	$(CC) ${CFLAGS_LIBYOCTO} -c $< -o $@
 
-$(OBJ_DIR)/$(TARGET_BOARDTEST)/%.o: $(call getSources,$(TARGET_BOARDTEST)) $(TARGET_LIBYOCTO)
+$(OBJ_DIR)/$(TARGET_BOARDTEST)/%.o: $(call getSources,$(TARGET_BOARDTEST))
 	@mkdir -p $(@D)
 	$(CC) ${CFLAGS_BOARDTEST} -c $< -o $@
 
-$(OBJ_DIR)/$(TARGET_SETLED)/%.o: $(call getSources,$(TARGET_SETLED)) $(TARGET_LIBYOCTO)
+$(OBJ_DIR)/$(TARGET_SETLED)/%.o: $(call getSources,$(TARGET_SETLED))
 	@mkdir -p $(@D)
 	$(CC) ${CFLAGS_SETLED} -c $< -o $@
 

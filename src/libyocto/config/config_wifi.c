@@ -2,6 +2,8 @@
 #include "logger.h"
 #include "libyocto_config.h"
 
+#include "config.h"
+
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -9,7 +11,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define CONFIG_BUFFER_SIZE 4096
+#define CONFIG_WIFI_BUFFER_SIZE 4096
 
 #define CONFIG_WIFI_DIR "/etc/"
 #define CONFIG_WIFI_FILENAME "hostapd.conf"
@@ -23,60 +25,13 @@
 #define CONFIG_WIFI_VARIABLE_PASSPHRASE     "wpa_passphrase"
 #define CONFIG_WIFI_VARIABLE_PASSPHRASE_LEN 14
 
-int _configCopyTmpFile(int tmpFileDescriptor, const char *tmpFilename, const char *destFilename)
-{
-    // Reset tmp file
-    if ((lseek(tmpFileDescriptor, 0, SEEK_SET)) < 0)
-    {
-        LOGGER_ERROR(errno, tmpFilename);
-        return -1;
-    }
-
-    // Open destination
-    FILE *destFile = fopen(destFilename, "w");
-
-    if (destFile == NULL)
-    {
-        LOGGER_ERROR(errno, destFilename);
-        return -1;
-    }
-
-    // Read tmp file and write to destination
-    int rc = 0;
-    char buffer[256];
-    ssize_t count;
-
-    while ((count = read(tmpFileDescriptor, buffer, sizeof(buffer))) > 0)
-    {
-        if (fwrite(buffer, count, 1, destFile) != 1)
-        {
-            if (ferror(destFile))
-            {
-                rc = -1;
-                LOGGER(LOGGER_LEVEL_ERROR, destFilename);
-                break;
-            }
-        }
-    }
-
-    if (count < 0)
-    {
-        rc = -1;
-        LOGGER_ERROR(errno, tmpFilename);
-    }
-
-    fclose(destFile);
-
-    return rc;
-}
-
 int _configWifiReplaceValue(char *pos, const char *value, int variableLen)
 {
     size_t valueLen = strlen(value);
 
-    if (variableLen + valueLen + 1 > CONFIG_BUFFER_SIZE)
+    if (variableLen + valueLen + 1 > CONFIG_WIFI_BUFFER_SIZE)
     {
-        LOGGER(LOGGER_LEVEL_ERROR, "Size of buffer too short (%d/%d) for value: %s", CONFIG_BUFFER_SIZE, variableLen + valueLen + 1, value);
+        LOGGER(LOGGER_LEVEL_ERROR, "Size of buffer too short (%d/%d) for value: %s", CONFIG_WIFI_BUFFER_SIZE, variableLen + valueLen + 1, value);
         return -1;
     }
 
@@ -123,7 +78,7 @@ int configWifiRead(char *ssid, size_t ssidLen, char *passphrase, size_t passphra
         return -1;
     }
 
-    char buffer[CONFIG_BUFFER_SIZE];
+    char buffer[CONFIG_WIFI_BUFFER_SIZE];
     int rc = 0;
     int nbValue = 2;
 
@@ -197,7 +152,7 @@ int configWifiWrite(const char *ssid, const char *passphrase)
     }
     else
     {
-        char buffer[CONFIG_BUFFER_SIZE];
+        char buffer[CONFIG_WIFI_BUFFER_SIZE];
         char *result = NULL;
 
         while ((result = fgets(buffer, sizeof(buffer), originalFile)) != NULL)
@@ -252,7 +207,7 @@ int configWifiWrite(const char *ssid, const char *passphrase)
             }
             else
             {
-                rc = _configCopyTmpFile(tmpFileDescriptor, tmpFileName, originalFilename);
+                rc = configCopyTmpFile(tmpFileDescriptor, tmpFileName, originalFilename);
             }
         }
     }
