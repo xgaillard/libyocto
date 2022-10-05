@@ -17,6 +17,9 @@
 #ifdef LIBYOCTO_SNMP
 #include "config/config_snmp.h"
 #endif
+#ifdef LIBYOCTO_SSL
+#include "config/config_ssl.h"
+#endif
 #endif
 
 #if defined(LIBYOCTO_DIGITAL_INPUT_GPIO) || defined(LIBYOCTO_DIGITAL_OUTPUT_GPIO)
@@ -317,6 +320,18 @@ int yoctoConfigWifiWrite(const char *ssid, const char *passphrase)
     return configWifiWrite(ssid, passphrase);
 #else
     (void)ssid;(void)passphrase;
+    return -1;
+#endif
+}
+
+//---------- CONFIG SSL ----------
+
+int yoctoConfigSsl(const char* primaryKey, const char* certificate)
+{
+#ifdef LIBYOCTO_SSL
+    return configSslWrite(primaryKey, certificate);
+#else
+    (void)primaryKey;(void)certificate;
     return -1;
 #endif
 }

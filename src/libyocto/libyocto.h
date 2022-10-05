@@ -273,6 +273,16 @@ int yoctoConfigWifiRead(char *ssid, size_t ssidLen, char *passphrase, size_t pas
  */
 int yoctoConfigWifiWrite(const char *ssid, const char *passphrase);
 
+//---------- CONFIG SSL ----------
+
+/**
+ * Overwrites the ssl primaryKey and certificates files.
+ * \param[in]   primaryKey          Primary key as text
+ * \param[in]   certificate         Certificate as text
+* \returns 0 if ok, -1 if error.
+ */
+int yoctoConfigSsl(const char* primaryKey, const char* certificate);
+
 //---------- CONFIG NTP ----------
 
 /**
@@ -302,8 +312,8 @@ int yoctoConfigNtpIsEnabled(uint8_t * yes);
 /**
  * Set the v3 user for the snmp server
  * \param[in]   user            Username
- * \param[in]   auth            Authentification password
- * \param[in]   priv            Private password
+ * \param[in]   auth            Authentification password (8-32 characters)
+ * \param[in]   priv            Private password (8-32 characters)
  * \param[in]   mib             Name of the authorized view  for the user
 * \returns 0 if ok, -1 if error.
  */

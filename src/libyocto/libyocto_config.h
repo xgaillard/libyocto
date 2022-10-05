@@ -76,6 +76,7 @@
 
 #if defined(LIBYOCTO_NETWORK) || defined(LIBYOCTO_WIFI)
 #define LIBYOCTO_SNMP
+#define LIBYOCTO_SSL
 #endif
 
 #if defined(LIBYOCTO_DIGITAL_INPUT_GPIO)

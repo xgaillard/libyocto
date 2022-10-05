@@ -2,11 +2,57 @@
 
 #include "logger.h"
 
+#include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-
 #include <unistd.h>
 #include <errno.h>
+
+int configCheckSize(const char *data, size_t min, size_t max)
+{
+    size_t length = strlen(data);
+
+    if (length >= min && (max == 0 || length <= max))
+    {
+        return 0;
+    }
+
+    LOGGER(LOGGER_LEVEL_ERROR, "String is the wrong size: %u <= %u <= %u)", min, length, max);
+    return -1;
+}
+
+int configWriteFile(const char *filename, const char *format, ...)
+{
+    FILE *file = fopen(filename, "w");
+
+    if (file == NULL)
+    {
+        LOGGER_ERROR(errno, filename);
+        return -1;
+    }
+
+    int rc = 0;
+
+    va_list args;
+    va_start(args, format);
+    rc = vfprintf(file, format, args);
+    va_end(args);
+
+    if (rc < 0)
+    {
+        if (ferror(file))
+        {
+            LOGGER(LOGGER_LEVEL_ERROR, "Failed to write to: %s", filename);
+        }
+        else
+        {
+            LOGGER_ERROR(errno, filename);
+        }
+    }
+
+    fclose(file);
+    return rc;
+}
 
 int configCopyTmpFile(int tmpFileDescriptor, const char *tmpFilename, const char *destFilename)
 {
@@ -52,35 +98,5 @@ int configCopyTmpFile(int tmpFileDescriptor, const char *tmpFilename, const char
 
     fclose(destFile);
 
-    return rc;
-}
-
-int configWriteFile(const char *filename, const char *format, ...)
-{
-    FILE *file = fopen(filename, "w");
-
-    if (file == NULL)
-    {
-        LOGGER_ERROR(errno, filename);
-        return -1;
-    }
-
-    int rc = 0;
-
-    va_list args;
-    va_start(args, format);
-    rc = vfprintf(file, format, args);
-    va_end(args);
-
-    if (rc < 0) {
-        if (ferror(file))
-        {
-            LOGGER(LOGGER_LEVEL_ERROR, "Failed to write to: %s", filename);
-        } else {
-            LOGGER_ERROR(errno, filename);
-        }
-    }
-
-    fclose(file);
     return rc;
 }
