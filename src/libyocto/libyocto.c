@@ -14,11 +14,20 @@
 #endif
 
 #if defined(LIBYOCTO_NETWORK) || defined(LIBYOCTO_WIFI)
+#ifdef LIBYOCTO_SSL
+#include "config/config_ssl.h"
+#endif
 #ifdef LIBYOCTO_SNMP
 #include "config/config_snmp.h"
 #endif
-#ifdef LIBYOCTO_SSL
-#include "config/config_ssl.h"
+#ifdef LIBYOCTO_NTP
+#include "config/config_ntp.h"
+#endif
+#ifdef LIBYOCTO_REMOTE_JOURNAL
+#include "config/config_remotejournal.h"
+#endif
+#if defined(LIBYOCTO_NTP) || defined(LIBYOCTO_REMOTE_JOURNAL)
+#include "config/config_service.h"
 #endif
 #endif
 
@@ -46,8 +55,8 @@ int yoctoInit()
 {
     int rc = 0;
 
-#if defined(LIBYOCTO_DIGITAL_INPUT_GPIO) ||  defined(LIBYOCTO_DIGITAL_OUTPUT_GPIO)
-    rc =  gpioInit();
+#if defined(LIBYOCTO_DIGITAL_INPUT_GPIO) || defined(LIBYOCTO_DIGITAL_OUTPUT_GPIO)
+    rc = gpioInit();
 #endif
 
     return rc;
@@ -55,7 +64,7 @@ int yoctoInit()
 
 void yoctoUninit()
 {
-#if defined(LIBYOCTO_DIGITAL_INPUT_GPIO) ||  defined(LIBYOCTO_DIGITAL_OUTPUT_GPIO)
+#if defined(LIBYOCTO_DIGITAL_INPUT_GPIO) || defined(LIBYOCTO_DIGITAL_OUTPUT_GPIO)
     gpioUninit();
 #endif
 }
@@ -104,7 +113,8 @@ int yoctoDigitalInputRead(int id, uint8_t *on)
 #ifdef LIBYOCTO_DIGITAL_INPUT_GPIO
     return gpioInputRead(id, on);
 #else
-    (void)id; (void)on;
+    (void)id;
+    (void)on;
     return -1;
 #endif
 }
@@ -131,10 +141,11 @@ int yoctoDigitalOutputRead(int id, uint8_t *on)
 #ifdef LIBYOCTO_DIGITAL_OUTPUT_RBOX630
     return gpioRboxRead(id, on);
 #else
-    return  gpioOutputRead(id, on);
+    return gpioOutputRead(id, on);
 #endif
 #else
-    (void)id; (void)on;
+    (void)id;
+    (void)on;
     return -1;
 #endif
 }
@@ -162,7 +173,8 @@ int yoctoDigitalOutputWrite(int id, uint8_t on)
     return gpioOutputWrite(id, on);
 #endif
 #else
-    (void)id; (void)on;
+    (void)id;
+    (void)on;
     return -1;
 #endif
 }
@@ -231,7 +243,9 @@ int yoctoComConfigWrite(int id, uint8_t type, uint8_t termination)
 #ifdef LIBYOCTO_COMCONFIG_RBOX630
     return comRboxConfigWrite(id, type, termination);
 #else
-    (void)id;(void)type;(void)termination;
+    (void)id;
+    (void)type;
+    (void)termination;
     return -1;
 #endif
 }
@@ -241,7 +255,9 @@ int yoctoComConfigRead(int id, uint8_t *type, uint8_t *termination)
 #ifdef LIBYOCTO_COMCONFIG_RBOX630
     return comRboxConfigRead(id, type, termination);
 #else
-    (void)id;(void)type;(void)termination;
+    (void)id;
+    (void)type;
+    (void)termination;
     return -1;
 #endif
 }
@@ -287,7 +303,11 @@ int yoctoConfigNetworkRead(const char *interface, char *cidrAddress, size_t cidr
 #ifdef LIBYOCTO_NETWORK
     return configNetworkRead(interface, cidrAddress, cidrAddressLen, gateway, gatewayLen);
 #else
-    (void)interface;(void)cidrAddress;(void)cidrAddressLen;(void)gateway;(void)gatewayLen;
+    (void)interface;
+    (void)cidrAddress;
+    (void)cidrAddressLen;
+    (void)gateway;
+    (void)gatewayLen;
     return -1;
 #endif
 }
@@ -297,7 +317,9 @@ int yoctoConfigNetworkWrite(const char *interface, const char *cidrAddress, cons
 #ifdef LIBYOCTO_NETWORK
     return configNetworkWrite(interface, cidrAddress, gateway);
 #else
-    (void)interface;(void)cidrAddress;(void)gateway;
+    (void)interface;
+    (void)cidrAddress;
+    (void)gateway;
     return -1;
 #endif
 }
@@ -309,7 +331,10 @@ int yoctoConfigWifiRead(char *ssid, size_t ssidLen, char *passphrase, size_t pas
 #ifdef LIBYOCTO_WIFI
     return configWifiRead(ssid, ssidLen, passphrase, passphraseLen);
 #else
-    (void)ssid;(void)ssidLen;(void)passphrase;(void)passphraseLen;
+    (void)ssid;
+    (void)ssidLen;
+    (void)passphrase;
+    (void)passphraseLen;
     return -1;
 #endif
 }
@@ -319,66 +344,126 @@ int yoctoConfigWifiWrite(const char *ssid, const char *passphrase)
 #ifdef LIBYOCTO_WIFI
     return configWifiWrite(ssid, passphrase);
 #else
-    (void)ssid;(void)passphrase;
+    (void)ssid;
+    (void)passphrase;
     return -1;
 #endif
 }
 
 //---------- CONFIG SSL ----------
 
-int yoctoConfigSsl(const char* primaryKey, const char* certificate)
+int yoctoConfigSsl(const char *primaryKey, const char *certificate)
 {
 #ifdef LIBYOCTO_SSL
     return configSslWrite(primaryKey, certificate);
 #else
-    (void)primaryKey;(void)certificate;
+    (void)primaryKey;
+    (void)certificate;
     return -1;
 #endif
 }
 
 //---------- CONFIG NTP ----------
 
-int yoctoConfigNtpServer(const char *ip, const int key)
+int yoctoConfigNtpWrite(const char *ip, const int key)
 {
-    (void)ip; (void)key; 
-    //return configNtpWrite(ip, key);
+#ifdef LIBYOCTO_NTP
+    return configNtpWrite(ip, key);
+#else
+    (void)ip;
+    (void)key;
     return -1;
+#endif
 }
 
-int yoctoConfigNtpKeyfile(const char *content)
+int yoctoConfigNtpKeysWrite(const char *content)
 {
+#ifdef LIBYOCTO_NTP
+    return configNtpKeysWrite(content);
+#else
     (void)content;
-    //return configNtpKeysWrite(content);
     return -1;
+#endif
 }
 
-int yoctoConfigNtpIsEnabled(uint8_t *yes)
+int yoctoConfigNtpEnable(int enable)
 {
-    *yes = 0;
-    return 0;
+#ifdef LIBYOCTO_NTP
+    return configServiceEnable(CONFIG_SERVICE_NTP, enable);
+#else
+    (void)enable;
+    return -1;
+#endif
+}
+
+int yoctoConfigNtpEnabled()
+{
+#ifdef LIBYOCTO_NTP
+    return configServiceIsEnabled(CONFIG_SERVICE_NTP);
+#else
+    return -1;
+#endif
 }
 
 //---------- CONFIG SNMP ----------
 
-int yoctoConfigSnmp(const char* user, const char* auth, const char* priv, const char* view)
+int yoctoConfigSnmp(const char *user, const char *auth, const char *priv, const char *view)
 {
 #ifdef LIBYOCTO_SNMP
     int rc = 0;
 
-    //Stop snmpd
-    if ((rc = yoctoServiceStop(CONFIG_SNMP_SERVICE) >= 0)) {
-        //Save user
+    // Stop snmpd
+    if ((rc = yoctoServiceStop(CONFIG_SNMP_SERVICE) >= 0))
+    {
+        // Save user
         rc = configSnmpWrite(user, auth, priv, view);
     }
 
-    //Start snmpd
-    if (yoctoServiceStart(CONFIG_SNMP_SERVICE) < 0) {
+    // Start snmpd
+    if (yoctoServiceStart(CONFIG_SNMP_SERVICE) < 0)
+    {
         return -1;
     }
 
     return rc;
 #else
-    (void)user;(void)auth;(void)priv;(void)view;
+    (void)user;
+    (void)auth;
+    (void)priv;
+    (void)view;
     return -1;
 #endif
 }
+
+//---------- CONFIG REMOTE JOURNAL ----------
+
+int yoctoConfigRemoteJournalWrite(const char *ip, const char *certificate)
+{
+#ifdef LIBYOCTO_REMOTE_JOURNAL
+    return configRemoteJournalWrite(ip, certificate);
+#else
+    (void)ip;
+    (void)certificate;
+    return -1;
+#endif
+}
+
+int yoctoConfigRemoteJournalEnable(int enable)
+{
+#ifdef LIBYOCTO_REMOTE_JOURNAL
+    return configServiceEnable(CONFIG_SERVICE_JOURNAL, enable);
+#else
+    (void)enable;
+    return -1;
+#endif
+}
+
+int yoctoConfigRemoteJournalEnabled()
+{
+#ifdef LIBYOCTO_REMOTE_JOURNAL
+    return configServiceIsEnabled(CONFIG_SERVICE_JOURNAL);
+#else
+    return -1;
+#endif
+}
+

@@ -7,22 +7,39 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <errno.h>
+#include <assert.h>
+#include <arpa/inet.h>
 
 int configCheckSize(const char *data, size_t min, size_t max)
 {
     size_t length = strlen(data);
 
-    if (length >= min && (max == 0 || length <= max))
+    if (length < min || (max != 0 && length > max))
     {
-        return 0;
+        LOGGER(LOGGER_LEVEL_ERROR, "String is the wrong size: %u <= %u <= %u)", min, length, max);
+        return -1;
     }
 
-    LOGGER(LOGGER_LEVEL_ERROR, "String is the wrong size: %u <= %u <= %u)", min, length, max);
-    return -1;
+    return 0;
+}
+
+int configCheckIpV4(const char *ip)
+{
+    unsigned char buf[sizeof(struct in6_addr)];
+
+    if (inet_pton(AF_INET, ip, buf) != 1)
+    {
+        LOGGER(LOGGER_LEVEL_ERROR, "Invalide ipV4 address: %s", ip);
+        return -1;
+    }
+
+    return 0;
 }
 
 int configWriteFile(const char *filename, const char *format, ...)
 {
+    assert(filename);
+
     FILE *file = fopen(filename, "w");
 
     if (file == NULL)
@@ -52,6 +69,37 @@ int configWriteFile(const char *filename, const char *format, ...)
 
     fclose(file);
     return rc;
+}
+
+int configDeleteFile(const char *filename)
+{
+    assert(filename);
+
+    if (remove(filename) != 0)
+    {
+        LOGGER_ERROR(errno, filename);
+        return -1;
+    }
+
+    return 0;
+}
+
+int configIsFile(const char *filename)
+{
+    assert(filename);
+
+    if (access(filename, R_OK) != 0)
+    {
+        if (errno != ENOENT)
+        {
+            LOGGER_ERROR(errno, filename);
+            return -1;
+        }
+
+        return 0;
+    }
+
+    return 1;
 }
 
 int configCopyTmpFile(int tmpFileDescriptor, const char *tmpFilename, const char *destFilename)

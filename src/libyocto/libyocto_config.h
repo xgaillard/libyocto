@@ -54,8 +54,13 @@
 #undef LIBYOCTO_LED_ALARM
 #undef LIBYOCTO_LED_WIFI
 
+//From: meta-fareco/recipes-core/systemd/systemd-conf/network/10-eth0.network
 #define LIBYOCTO_NETWORK_ETH0_FILENAME  "10-eth0.network"
+
+//From: meta-fareco/recipes-core/systemd/systemd-conf/network/10-eth1.network
 #define LIBYOCTO_NETWORK_ETH1_FILENAME  "10-eth1.network"
+
+//From: meta-fareco/recipes-bsp/barebox/barebox/gws501/imx6ull-phytec-phycore-som-nand.dts
 #define LIBYOCTO_LED_STATUS_FILENAME    "user-led1"
 
 #elif defined(RADIPV3)
@@ -63,8 +68,12 @@
 #undef LIBYOCTO_LED_ALARM
 #undef LIBYOCTO_LED_WIFI
 
+//From: meta-fareco/recipes-core/systemd/systemd-conf/network/10-eth0.network
 #define LIBYOCTO_NETWORK_ETH0_FILENAME      "10-eth0.network"
+
+//From: meta-fareco/recipes-bsp/barebox/barebox/radipv3/imx6ull-phytec-phycore-som-nand.dts
 #define LIBYOCTO_LED_STATUS_FILENAME        "user-led1"
+
 #define LIBYOCTO_DIGITAL_INPUT_COUNT        3
 #define LIBYOCTO_DIGITAL_OUTPUT_COUNT       5
 
@@ -75,8 +84,10 @@
 // --------------------------------------------
 
 #if defined(LIBYOCTO_NETWORK) || defined(LIBYOCTO_WIFI)
-#define LIBYOCTO_SNMP
 #define LIBYOCTO_SSL
+#define LIBYOCTO_SNMP
+#define LIBYOCTO_NTP
+#define LIBYOCTO_REMOTE_JOURNAL
 #endif
 
 #if defined(LIBYOCTO_DIGITAL_INPUT_GPIO)

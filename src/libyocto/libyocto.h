@@ -9,8 +9,8 @@
  * make MACHINE=[RBOX630|GWS501|RADIPV3]
  */
 
-//TODO Add eeprom
-//TODO Add checkAxiomtek
+// TODO Add eeprom
+// TODO Add checkAxiomtek
 
 /**
  * Initialize the library.
@@ -20,7 +20,7 @@ int yoctoInit();
 
 /**
  * Uninitialize the library.
- * 
+ *
  */
 void yoctoUninit();
 
@@ -144,7 +144,7 @@ int yoctoLedAlarmOn();
  * Sets status led off.
  * \returns 0 if ok, -1 if error.
  */
-int yoctoLedStatusBlink();    
+int yoctoLedStatusBlink();
 
 /**
  * Sets status led on.
@@ -249,7 +249,7 @@ int yoctoConfigNetworkRead(const char *interface, char *cidrAddress, size_t cidr
  * \param[in]   interface       Name of the network interface (eth0, eth1, wlan0).
  * \param[in]   cidrAddress     Ip address with cidr mask (X.X.X.X/XX)
  * \param[in]   gateway         Ip address of the gateway with cidr mask (X.X.X.X/XX)
-* \returns 0 if ok, -1 if error.
+ * \returns 0 if ok, -1 if error.
  */
 int yoctoConfigNetworkWrite(const char *interface, const char *cidrAddress, const char *gateway);
 
@@ -269,7 +269,7 @@ int yoctoConfigWifiRead(char *ssid, size_t ssidLen, char *passphrase, size_t pas
  * Writes the configuration of the wifi access point.
  * \param[in]   ssid            Ip address with cidr mask (X.X.X.X/XX)
  * \param[in]   gateway         Ip address of the gateway with cidr mask (X.X.X.X/XX)
-* \returns 0 if ok, -1 if error.
+ * \returns 0 if ok, -1 if error.
  */
 int yoctoConfigWifiWrite(const char *ssid, const char *passphrase);
 
@@ -279,33 +279,39 @@ int yoctoConfigWifiWrite(const char *ssid, const char *passphrase);
  * Overwrites the ssl primaryKey and certificates files.
  * \param[in]   primaryKey          Primary key as text
  * \param[in]   certificate         Certificate as text
-* \returns 0 if ok, -1 if error.
+ * \returns 0 if ok, -1 if error.
  */
-int yoctoConfigSsl(const char* primaryKey, const char* certificate);
+int yoctoConfigSsl(const char *primaryKey, const char *certificate);
 
 //---------- CONFIG NTP ----------
 
 /**
- * Writes the configuration of the ntp client.
+ * Writes the ntp client server configuration.
  * \param[in]   ip              Ip address (NULL to disable)
  * \param[in]   keyIndex        Index of the key to use (0 if no key)
-* \returns 0 if ok, -1 if error.
+ * \returns 0 if ok, -1 if error.
  */
-int yoctoConfigNtpServer(const char *ip, const int keyIndex);
+int yoctoConfigNtpWrite(const char *ip, const int keyIndex);
 
 /**
  * Writes the keyfile of the ntp client.
  * \param[in]   content         Content of the keyfile
-* \returns 0 if ok, -1 if error.
+ * \returns 0 if ok, -1 if error.
  */
-int yoctoConfigNtpKeyfile(const char *content);
+int yoctoConfigNtpKeysWrite(const char *content);
 
 /**
- * Checks if ntp is enabled
- * \param[out]  yes             0 if disabled, 1 if enabled
-* \returns 0 if ok, -1 if error.
+ * Enables the ntp client.
+ * \param[in]   enable          0 to disable, other to enable
+ * \returns 0 if ok, -1 if error.
  */
-int yoctoConfigNtpIsEnabled(uint8_t * yes);
+int yoctoConfigNtpEnable(int enable);
+
+/**
+ * Checks if the ntp client is enabled.
+ * \returns 1 if enabled, 0 if disabled, -1 if error.
+ */
+int yoctoConfigNtpEnabled();
 
 //---------- CONFIG SNMP ----------
 
@@ -315,8 +321,32 @@ int yoctoConfigNtpIsEnabled(uint8_t * yes);
  * \param[in]   auth            Authentification password (8-32 characters)
  * \param[in]   priv            Private password (8-32 characters)
  * \param[in]   mib             Name of the authorized view  for the user
-* \returns 0 if ok, -1 if error.
+ * \returns 0 if ok, -1 if error.
  */
-int yoctoConfigSnmp(const char* user, const char* auth, const char* priv, const char* view); 
+int yoctoConfigSnmp(const char *user, const char *auth, const char *priv, const char *view);
+
+//---------- CONFIG REMOTE JOURNAL ----------
+
+/**
+ * Writes the remote journal client server configuration.
+ * \param[in]   ip              IpV4 address (NULL to omit)
+ * \param[in]   certificate     Certificate as text (NULL to omit)
+ * \returns 0 if ok, -1 if error.
+ */
+int yoctoConfigRemoteJournalWrite(const char *ip, const char *certificate);
+
+/**
+ * Enables the remote journal client.
+ * \param[in]   enable          0 to disable, other to enable
+ * \returns 0 if ok, -1 if error.
+ */
+int yoctoConfigRemoteJournalEnable(int enable);
+
+/**
+ * Checks if the remote journal client is enabled
+ * \returns 1 if enabled, 0 if disabled, -1 if error.
+ */
+int yoctoConfigRemoteJournalEnabled();
+
 
 #endif // LIBYOCTO_H

@@ -13,6 +13,8 @@
 #define CONFIG_SSL_KEY_MINSIZE 1024
 #define CONFIG_SSL_KEY_MAXSIZE 4096
 
+//From: meta-fareco/recipes-extended/lighttpd/lighttpd/lighttpd.conf
+//From: meta-fareco/recipes-support/stunnel/stunnel/stunnel.conf
 #define CONFIG_SSL_FILENAME_KEY "/etc/security/ssl/private/ssl.key.pem"
 #define CONFIG_SSL_FILENAME_CERT "/etc/security/ssl/certs/ssl.cert.pem"
 
