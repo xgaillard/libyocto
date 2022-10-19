@@ -564,6 +564,48 @@ int testConfigRemoteJournal()
 }
 #endif // LIBYOCTO_REMOTE_JOURNAL
 
+#ifdef LIBYOCTO_8021X
+int testConfig8021x()
+{
+    messageSection("802.1x");
+
+    int status = EXIT_SUCCESS;
+    int rc;
+
+    if ((rc = yoctoConfig8021xWrite("board@fareco.com", SSL_KEY, "1234", SSL_CERT, SSL_CA)) < 0)
+    {
+        status = EXIT_FAILURE;
+    }
+    message("Config8021xWrite", 0, rc, "");
+
+    if ((rc = yoctoConfig8021xEnable(1)) < 0)
+    {
+        status = EXIT_FAILURE;
+    }
+    message("Config8021xEnable", 0, rc, "Enable");
+
+    if ((rc = yoctoConfig8021xEnabled()) < 0)
+    {
+        status = EXIT_FAILURE;
+    }
+    message("Config8021xEnabled", 0, rc, "Enabled: %s", rc == 1 ? "yes" : "no");
+
+    if ((rc = yoctoConfig8021xEnable(0)) < 0)
+    {
+        status = EXIT_FAILURE;
+    }
+    message("Config8021xEnable", 0, rc, "Disable");
+
+    if ((rc = yoctoConfig8021xEnabled()) < 0)
+    {
+        status = EXIT_FAILURE;
+    }
+    message("Config8021xEnabled", 0, rc, "Enabled: %s", rc == 1 ? "yes" : "no");
+
+    return status;
+}
+#endif //LIBYOCTO_8021X
+
 void printBinary(uint8_t data)
 {
     for (int i = sizeof(char) * 7; i >= 0; i--)
@@ -631,7 +673,11 @@ int main()
 #ifdef LIBYOCTO_REMOTE_JOURNAL
         status |= testConfigRemoteJournal();
 #endif // LIBYOCTO_REMOTE_JOURNAL
-    }
+ 
+#ifdef LIBYOCTO_8021X
+        status |= testConfig8021x();
+#endif // LIBYOCTO_8021X
+   }
 
     yoctoUninit();
     /*

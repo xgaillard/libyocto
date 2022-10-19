@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-//From: meta-fareco/recipes-extended/radsirius/radsirius/chrony/fareco.conf
+//From: meta-fareco/recipes-extended/libyocto/libyocto-config/chrony/fareco.conf
 #define CONFIG_NTP_FILENAME "/etc/fareco/chrony.d/fareco.conf"
 
 //From: meta-fareco/recipes-support/chrony/chrony/chrony.conf
@@ -16,7 +16,6 @@ int configNtpWrite(const char *ip, const int keyIndex)
     assert(ip);
 
     char buffer[512];
-
     if (keyIndex <= 0) {
         snprintf(buffer, sizeof(buffer), "key %d", keyIndex);
     } else {

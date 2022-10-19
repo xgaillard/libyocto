@@ -276,18 +276,18 @@ int yoctoConfigWifiWrite(const char *ssid, const char *passphrase);
 //---------- CONFIG SSL ----------
 
 /**
- * Overwrites the ssl primaryKey and certificates files.
- * \param[in]   primaryKey          Primary key as text
+ * Overwrites the ssl privateKey and certificates files.
+ * \param[in]   privateKey          Private key as text
  * \param[in]   certificate         Certificate as text
  * \returns 0 if ok, -1 if error.
  */
-int yoctoConfigSsl(const char *primaryKey, const char *certificate);
+int yoctoConfigSsl(const char *privateKey, const char *certificate);
 
 //---------- CONFIG NTP ----------
 
 /**
  * Writes the ntp client server configuration.
- * \param[in]   ip              Ip address (NULL to disable)
+ * \param[in]   ip              Ip address
  * \param[in]   keyIndex        Index of the key to use (0 if no key)
  * \returns 0 if ok, -1 if error.
  */
@@ -329,8 +329,8 @@ int yoctoConfigSnmp(const char *user, const char *auth, const char *priv, const 
 
 /**
  * Writes the remote journal client server configuration.
- * \param[in]   ip              IpV4 address (NULL to omit)
- * \param[in]   certificate     Certificate as text (NULL to omit)
+ * \param[in]   ip              IpV4 address
+ * \param[in]   certificate     Certificate as text
  * \returns 0 if ok, -1 if error.
  */
 int yoctoConfigRemoteJournalWrite(const char *ip, const char *certificate);
@@ -348,5 +348,31 @@ int yoctoConfigRemoteJournalEnable(int enable);
  */
 int yoctoConfigRemoteJournalEnabled();
 
+//---------- CONFIG 802.1x ----------
+
+/**
+ * Writes the 802.1x authentification configuration.
+ * \param[in]   identity                Identity
+ * \param[in]   privateKey              Private key as text
+ * \param[in]   privateKeyPassword      Private key password (NULL to ignore)
+ * \param[in]   certificate             Certificate as text
+ * \param[in]   certificateAuthority    Certificate of the authority as text (NULL to ignore)
+ * \returns 0 if ok, -1 if error.
+ */
+
+int yoctoConfig8021xWrite(const char *identity, const char *privateKey, const char *privateKeyPassword, const char *certificate, const char *certificateAuthority);
+
+/**
+ * Enables the 802.1x authentification.
+ * \param[in]   enable          0 to disable, other to enable
+ * \returns 0 if ok, -1 if error.
+ */
+int yoctoConfig8021xEnable(int enable);
+
+/**
+ * Checks if the 802.1x authentification is enabled
+ * \returns 1 if enabled, 0 if disabled, -1 if error.
+ */
+int yoctoConfig8021xEnabled();
 
 #endif // LIBYOCTO_H

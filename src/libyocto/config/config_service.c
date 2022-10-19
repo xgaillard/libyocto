@@ -5,11 +5,14 @@
 
 #include <stdio.h>
 
-//From: meta-fareco/recipes-extended/radsirius/radsirius/systemd/chronyd.service.d/90-fareco.conf
+//From: meta-fareco/recipes-extended/libyocto/libyocto-config/systemd/chronyd.service.d/90-fareco.conf
 #define CONFIG_SERVICE_NTP_FILENAME "/etc/fareco/services/ntp"
 
-//From: meta-fareco/recipes-extended/radsirius/radsirius/systemd/systemd-journal-upload.service.d/90-fareco.conf
+//From: meta-fareco/recipes-extended/libyocto/libyocto-config/systemd/systemd-journal-upload.service.d/90-fareco.conf
 #define CONFIG_SERVICE_JOURNAL_FILENAME "/etc/fareco/services/journal"
+
+//From: meta-fareco/recipes-extended/libyocto/libyocto-config/systemd/wpa_supplicant-wired@.service.d/90-fareco.conf
+#define CONFIG_SERVICE_8021X_FILENAME "/etc/fareco/services/wpa-wired"
 
 static const char *_serviceName(ConfigService type)
 {
@@ -21,11 +24,9 @@ static const char *_serviceName(ConfigService type)
     case CONFIG_SERVICE_JOURNAL:
         return CONFIG_SERVICE_JOURNAL_FILENAME;
         break;
-        /*
     case CONFIG_SERVICE_8021X:
-        return "wpa_supplicant@eth0.service";
+        return CONFIG_SERVICE_8021X_FILENAME;
         break;
-        */
     default:
         LOGGER(LOGGER_LEVEL_ERROR, "Unknow service id: %d)", type);
         break;

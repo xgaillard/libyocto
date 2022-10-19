@@ -18,13 +18,13 @@
 #define CONFIG_SSL_FILENAME_KEY "/etc/security/ssl/private/ssl.key.pem"
 #define CONFIG_SSL_FILENAME_CERT "/etc/security/ssl/certs/ssl.cert.pem"
 
-int configSslWrite(const char *primaryKey, const char *certificate)
+int configSslWrite(const char *privateKey, const char *certificate)
 {
-    assert(primaryKey);
+    assert(privateKey);
     assert(certificate);
 
     if (
-        configCheckSize(primaryKey, CONFIG_SSL_KEY_MINSIZE, CONFIG_SSL_KEY_MAXSIZE) < 0 ||
+        configCheckSize(privateKey, CONFIG_SSL_KEY_MINSIZE, CONFIG_SSL_KEY_MAXSIZE) < 0 ||
         configCheckSize(certificate, CONFIG_SSL_KEY_MINSIZE, CONFIG_SSL_KEY_MAXSIZE) < 0)
     {
 
@@ -32,7 +32,7 @@ int configSslWrite(const char *primaryKey, const char *certificate)
     }
 
    if (
-        configWriteFile(CONFIG_SSL_FILENAME_KEY, primaryKey) < 0 ||
+        configWriteFile(CONFIG_SSL_FILENAME_KEY, privateKey) < 0 ||
         configWriteFile(CONFIG_SSL_FILENAME_CERT, certificate) < 0)
     {
         return -1;

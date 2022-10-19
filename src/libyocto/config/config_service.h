@@ -3,8 +3,8 @@
 
 typedef enum {
     CONFIG_SERVICE_NTP,
-    CONFIG_SERVICE_JOURNAL
-    //CONFIG_SERVICE_8021X
+    CONFIG_SERVICE_JOURNAL,
+    CONFIG_SERVICE_8021X
 } ConfigService;
 
 int configServiceEnable(ConfigService type, int enable);

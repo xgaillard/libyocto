@@ -26,7 +26,10 @@
 #ifdef LIBYOCTO_REMOTE_JOURNAL
 #include "config/config_remotejournal.h"
 #endif
-#if defined(LIBYOCTO_NTP) || defined(LIBYOCTO_REMOTE_JOURNAL)
+#ifdef LIBYOCTO_8021X
+#include "config/config_8021x.h"
+#endif
+#if defined(LIBYOCTO_NTP) || defined(LIBYOCTO_REMOTE_JOURNAL) || defined(LIBYOCTO_8021X)
 #include "config/config_service.h"
 #endif
 #endif
@@ -352,12 +355,12 @@ int yoctoConfigWifiWrite(const char *ssid, const char *passphrase)
 
 //---------- CONFIG SSL ----------
 
-int yoctoConfigSsl(const char *primaryKey, const char *certificate)
+int yoctoConfigSsl(const char *privateKey, const char *certificate)
 {
 #ifdef LIBYOCTO_SSL
-    return configSslWrite(primaryKey, certificate);
+    return configSslWrite(privateKey, certificate);
 #else
-    (void)primaryKey;
+    (void)privateKey;
     (void)certificate;
     return -1;
 #endif
@@ -462,6 +465,36 @@ int yoctoConfigRemoteJournalEnabled()
 {
 #ifdef LIBYOCTO_REMOTE_JOURNAL
     return configServiceIsEnabled(CONFIG_SERVICE_JOURNAL);
+#else
+    return -1;
+#endif
+}
+
+//---------- CONFIG 802.1x ----------
+
+int yoctoConfig8021xWrite(const char *identity, const char *privateKey, const char *privateKeyPassword, const char *certificate, const char *certificateAuthority)
+{
+#ifdef LIBYOCTO_8021X
+    return config8021xWrite(identity, privateKey, privateKeyPassword, certificate, certificateAuthority);
+#else
+    return -1;
+#endif
+}
+
+int yoctoConfig8021xEnable(int enable)
+{
+#ifdef LIBYOCTO_REMOTE_JOURNAL
+    return configServiceEnable(CONFIG_SERVICE_8021X, enable);
+#else
+    (void)enable;
+    return -1;
+#endif
+}
+
+int yoctoConfig8021xEnabled()
+{
+#ifdef LIBYOCTO_REMOTE_JOURNAL
+    return configServiceIsEnabled(CONFIG_SERVICE_8021X);
 #else
     return -1;
 #endif
