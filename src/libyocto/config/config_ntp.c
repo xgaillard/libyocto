@@ -16,7 +16,7 @@ int configNtpWrite(const char *ip, const int keyIndex)
     assert(ip);
 
     char buffer[512];
-    if (keyIndex <= 0) {
+    if (keyIndex > 0) {
         snprintf(buffer, sizeof(buffer), "key %d", keyIndex);
     } else {
         buffer[0] = '\0';

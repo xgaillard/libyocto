@@ -368,7 +368,7 @@ int yoctoConfigSsl(const char *privateKey, const char *certificate)
 
 //---------- CONFIG NTP ----------
 
-int yoctoConfigNtpWrite(const char *ip, const int key)
+int yoctoConfigNtpWrite(const char *ip, int key)
 {
 #ifdef LIBYOCTO_NTP
     return configNtpWrite(ip, key);

@@ -291,7 +291,7 @@ int yoctoConfigSsl(const char *privateKey, const char *certificate);
  * \param[in]   keyIndex        Index of the key to use (0 if no key)
  * \returns 0 if ok, -1 if error.
  */
-int yoctoConfigNtpWrite(const char *ip, const int keyIndex);
+int yoctoConfigNtpWrite(const char *ip, int keyIndex);
 
 /**
  * Writes the keyfile of the ntp client.
