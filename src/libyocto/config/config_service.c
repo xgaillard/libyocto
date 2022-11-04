@@ -9,7 +9,7 @@
 #define CONFIG_SERVICE_NTP_FILENAME "/etc/fareco/services/ntp"
 
 //From: meta-fareco/recipes-extended/libyocto/libyocto-config/systemd/systemd-journal-upload.service.d/90-fareco.conf
-#define CONFIG_SERVICE_JOURNAL_FILENAME "/etc/fareco/services/journal"
+#define CONFIG_SERVICE_JOURNAL_FILENAME "/etc/fareco/services/journal-upload"
 
 //From: meta-fareco/recipes-extended/libyocto/libyocto-config/systemd/wpa_supplicant-wired@.service.d/90-fareco.conf
 #define CONFIG_SERVICE_8021X_FILENAME "/etc/fareco/services/wpa-wired"
