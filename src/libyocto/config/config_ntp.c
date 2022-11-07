@@ -15,14 +15,15 @@ int configNtpWrite(const char *ip, const int keyIndex)
 {
     assert(ip);
 
-    char buffer[512];
+    int rc;
+
     if (keyIndex > 0) {
-        snprintf(buffer, sizeof(buffer), "key %d", keyIndex);
+        rc = configWriteFile(CONFIG_NTP_FILENAME, "server %s iburst key %d", ip, keyIndex);
     } else {
-        buffer[0] = '\0';
+        rc = configWriteFile(CONFIG_NTP_FILENAME, "server %s iburst", ip);
     }
-    
-    return configWriteFile(CONFIG_NTP_FILENAME, "server %s iburst %s", ip, buffer) >= 0 ? 0 : -1;
+
+    return rc >= 0 ? 0 : -1;
 }
 
 int configNtpKeysWrite(const char *content)
