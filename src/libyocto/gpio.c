@@ -127,16 +127,14 @@ int gpioInit()
     }
 
     unsigned int offsetsOutput0[GPIO_OUTPUT0_COUNT] = {17, 18, 19, 20};
-    int defaultsOutput0[GPIO_OUTPUT0_COUNT] = {0};
-    // int defaultsOutput0[GPIO_OUTPUT0_COUNT] = {1,1,1,1};
+    int defaultsOutput0[GPIO_OUTPUT0_COUNT] = {0, 0, 0, 1};
     if (_requestOutput(gChips[0], &gOutputs[0], offsetsOutput0, GPIO_OUTPUT0_COUNT, 0, defaultsOutput0) < 0)
     {
         goto error;
     }
 
     unsigned int offsetsOutput1[GPIO_OUTPUT1_COUNT] = {21};
-    int defaultsOutput1[GPIO_OUTPUT1_COUNT] = {0};
-    // int defaultsOutput1[GPIO_OUTPUT1_COUNT] = {1};
+    int defaultsOutput1[GPIO_OUTPUT1_COUNT] = {1};
     if (_requestOutput(gChips[0], &gOutputs[1], offsetsOutput1, GPIO_OUTPUT1_COUNT, GPIOD_LINE_REQUEST_FLAG_ACTIVE_LOW, defaultsOutput1) < 0)
     {
         goto error;
