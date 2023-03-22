@@ -36,15 +36,17 @@
 #undef LIBYOCTO_LED_WIFI
 
 #elif defined(RBOX630)
-#define LIBYOCTO_NETWORK_ETH0_FILENAME      "20-eth0.network"
-#define LIBYOCTO_NETWORK_ETH1_FILENAME      "30-eth1.network"
-#define LIBYOCTO_NETWORK_WLAN0_FILENAME     "40-wlan0.network"
+#define LIBYOCTO_NETWORK_ETH0_FILENAME      "10-eth0.network"
+#define LIBYOCTO_NETWORK_ETH1_FILENAME      "10-eth1.network"
+#define LIBYOCTO_NETWORK_WLAN0_FILENAME     "30-wlan0.network"
 #define LIBYOCTO_DIGITAL_INPUT_COUNT        8
 #undef LIBYOCTO_DIGITAL_OUTPUT_GPIO
-#define LIBYOCTO_LED_WIFI_FILENAME          "card1-link"
+#define LIBYOCTO_LED_WIFI_FILENAME          "minicard1-link"
+
+#define LIBYOCTO_DIGITAL_OUTPUT_RBOX630
+#define LIBYOCTO_DIGITAL_OUTPUT_COUNT   8
 
 #define LIBYOCTO_COMCONFIG_RBOX630
-#define LIBYOCTO_DIGITAL_OUTPUT_RBOX630
 #define LIBYOCTO_LED_RBOX630
 
 #elif defined(GWS501)
@@ -54,10 +56,11 @@
 #undef LIBYOCTO_LED_ALARM
 #undef LIBYOCTO_LED_WIFI
 
-//From: meta-fareco/recipes-core/systemd/systemd-conf/network/10-eth0.network
+//From: meta-fareco/recipes-core/systemd/systemd-network/10-eth0.network
 #define LIBYOCTO_NETWORK_ETH0_FILENAME  "10-eth0.network"
 
-//From: meta-fareco/recipes-core/systemd/systemd-conf/network/10-eth1.network
+//From: meta-fareco/dynamic-layers/meta-axiomtek/recipes-core/systemd/systemd-network/rbox630/10-eth1.network
+//                                /meta-gateworks/recipes-core/systemd/systemd-network/gw73xx/10-eth1.network
 #define LIBYOCTO_NETWORK_ETH1_FILENAME  "10-eth1.network"
 
 //From: meta-fareco/recipes-bsp/barebox/barebox/gws501/imx6ull-phytec-phycore-som-nand.dts

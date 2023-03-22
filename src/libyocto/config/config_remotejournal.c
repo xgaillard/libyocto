@@ -9,7 +9,7 @@
 #define CONFIG_REMOTE_JOURNAL_CERT_MAXSIZE 4096
 
 // From: meta-fareco/recipes-core/systemd/systemd-conf/journal-upload.conf.d/20-default.conf
-#define CONFIG_REMOTE_JOURNAL_CERT_FILENAME "/etc/security/journal-upload/certs/ca.cert.pem"
+#define CONFIG_REMOTE_JOURNAL_CERT_FILENAME CONFIG_RWDIR_SECURE"/journal-upload/certs/ca.cert.pem"
 
 // From: meta-fareco/recipes-core/systemd/systemd-conf/journal-upload.conf.d/10-url.conf
 #define CONFIG_REMOTE_JOURNAL_CONF_FILENAME "/etc/systemd/journal-upload.conf.d/10-url.conf"

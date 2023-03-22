@@ -15,12 +15,12 @@
 
 // From: meta-fareco/recipes-extended/lighttpd/lighttpd/lighttpd.conf
 // From: meta-fareco/recipes-support/stunnel/stunnel/stunnel.conf
-#define CONFIG_SSL_KEY_FILENAME "/etc/security/ssl/private/ssl.key.pem"
-#define CONFIG_SSL_CERT_FILENAME "/etc/security/ssl/certs/ssl.cert.pem"
+#define CONFIG_SSL_KEY_FILENAME                 CONFIG_RWDIR_SECURE"/ssl/private/ssl.key.pem"
+#define CONFIG_SSL_CERT_FILENAME                CONFIG_RWDIR_SECURE"/ssl/certs/ssl.cert.pem"
 
 // From: meta-fareco/recipes-core/systemd/systemd-conf/journal-upload.conf.d/20-default.conf
-#define CONFIG_SSL_REMOTE_JOURNAL_KEY_FILENAME "/etc/security/journal-upload/private/ssl.key.pem"
-#define CONFIG_SSL_REMOTE_JOURNAL_CERT_FILENAME "/etc/security/journal-upload/certs/ssl.cert.pem"
+#define CONFIG_SSL_REMOTE_JOURNAL_KEY_FILENAME  CONFIG_RWDIR_SECURE"/journal-upload/private/ssl.key.pem"
+#define CONFIG_SSL_REMOTE_JOURNAL_CERT_FILENAME CONFIG_RWDIR_SECURE"/journal-upload/certs/ssl.cert.pem"
 
 int configSslWrite(const char *privateKey, const char *certificate)
 {

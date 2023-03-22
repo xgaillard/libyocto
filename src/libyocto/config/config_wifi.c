@@ -13,7 +13,7 @@
 
 #define CONFIG_WIFI_BUFFER_SIZE 4096
 
-#define CONFIG_WIFI_DIR "/etc/"
+#define CONFIG_WIFI_DIR CONFIG_RWDIR_CONF"/hostapd/"
 #define CONFIG_WIFI_FILENAME "hostapd.conf"
 #define CONFIG_WIFI_FILENAME_LEN 12
 

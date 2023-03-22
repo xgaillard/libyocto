@@ -195,6 +195,19 @@ int yoctoLedAlarmOn()
 #endif
 }
 
+int yoctoLedAlarmOff()
+{
+#ifdef LIBYOCTO_LED_ALARM
+#ifdef LIBYOCTO_LED_RBOX630
+    return ledRboxSet(LED_RBOX_ALARM, 0);
+#else
+    return ledSysSetTrigger(LIBYOCTO_LED_ALARM_FILENAME, LED_SYSFS_TRIGGER_NONE);
+#endif
+#else
+    return -1;
+#endif
+}
+
 int yoctoLedStatusBlink()
 {
 #ifdef LIBYOCTO_LED_STATUS

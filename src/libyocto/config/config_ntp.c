@@ -6,10 +6,10 @@
 #include <assert.h>
 
 //From: meta-fareco/recipes-extended/libyocto/libyocto-config/chrony/fareco.conf
-#define CONFIG_NTP_FILENAME "/etc/fareco/chrony.d/fareco.conf"
+#define CONFIG_NTP_FILENAME CONFIG_RWDIR_CONF"/chrony.d/fareco.conf"
 
 //From: meta-fareco/recipes-support/chrony/chrony/chrony.conf
-#define CONFIG_NTP_KEYS_FILENAME "/etc/security/chrony/chrony.keys"
+#define CONFIG_NTP_KEYS_FILENAME CONFIG_RWDIR_SECURE"/chrony/chrony.keys"
 
 int configNtpWrite(const char *ip, const int keyIndex)
 {

@@ -3,6 +3,14 @@
 
 #include <stddef.h>
 
+#ifndef CONFIG_RWDIR_CONF
+#define CONFIG_RWDIR_CONF "/etc/fareco"
+#endif
+
+#ifndef CONFIG_RWDIR_SECURE
+#define CONFIG_RWDIR_SECURE CONFIG_RWDIR_CONF"/secure"
+#endif
+
 int configCheckSize(const char* data, size_t min, size_t max);
 int configCheckIpV4(const char* ip);
 
