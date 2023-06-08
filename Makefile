@@ -17,8 +17,7 @@ ifneq ($(filter $(MACHINES), $(MACHINE)), )
     $(info Building for machine: $(MACHINE))
 	CFLAGS += -D$(MACHINE)
 else
-    $(error Missing MACHINE=[$(MACHINES)])
-    $(error Missing $(MACHINE))
+    $(error Missing MACHINE=[$(MACHINES)] for $(MACHINE))
 endif
 
 SRC_DIR = src
