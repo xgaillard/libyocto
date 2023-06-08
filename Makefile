@@ -12,12 +12,13 @@ TARGET_LIBYOCTO = lib${LIBYOCTO}
 TARGET_BOARDTEST = boardtest
 TARGET_SETLED = setled
 
-MACHINES = AMD64 RBOX630 GWS501 RADIPV3 IFB
+MACHINES = AMD64 RBOX630 GWS501 RADIPV3 ifb
 ifneq ($(filter $(MACHINES), $(MACHINE)), )
     $(info Building for machine: $(MACHINE))
 	CFLAGS += -D$(MACHINE)
 else
     $(error Missing MACHINE=[$(MACHINES)])
+    $(error Missing $(MACHINE))
 endif
 
 SRC_DIR = src
