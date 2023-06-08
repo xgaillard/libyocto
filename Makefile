@@ -17,7 +17,8 @@ ifneq ($(filter $(MACHINES), $(MACHINE)), )
     $(info Building for machine: $(MACHINE))
 	CFLAGS += -D$(MACHINE)
 else
-    $(error Missing MACHINE=[$(MACHINES)] for $(MACHINE))
+    $(info default machine: GWS501)
+	CFLAGS += -DGWS501
 endif
 
 SRC_DIR = src
