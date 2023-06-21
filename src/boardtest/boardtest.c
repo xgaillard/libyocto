@@ -257,7 +257,6 @@ int testDigitalInput()
     int rc;
 
     uint8_t data = 0;
-
     for (int i = 0; i < LIBYOCTO_DIGITAL_INPUT_COUNT; i++)
     {
         if ((rc = yoctoDigitalInputRead(i, &data)) != 0)
@@ -291,7 +290,7 @@ int testDigitalOutput()
         {
             status = EXIT_FAILURE;
         }
-        message("DigitalOutputWrite", 0, rc, "id=%d data=1", index);
+        message("DigitalOutputWrite", 1, rc, "id=%d data=1", index);
     }
 
     for (int index = 0; index < LIBYOCTO_DIGITAL_OUTPUT_COUNT; index++)
@@ -300,7 +299,7 @@ int testDigitalOutput()
         {
             status = EXIT_FAILURE;
         }
-        message("DigitalOutputWrite", 0, rc, "id=%d data=0", index);
+        message("DigitalOutputWrite", 1, rc, "id=%d data=0", index);
     }
 
     uint8_t data = 0xFF;
@@ -472,7 +471,7 @@ int testSnmp()
 
     return status;
 }
-#endif //LIBYOCTO_SNMP
+#endif // LIBYOCTO_SNMP
 
 #ifdef LIBYOCTO_NTP
 int testConfigNtp()
@@ -604,7 +603,7 @@ int testConfig8021x()
 
     return status;
 }
-#endif //LIBYOCTO_8021X
+#endif // LIBYOCTO_8021X
 
 void printBinary(uint8_t data)
 {
@@ -616,137 +615,41 @@ void printBinary(uint8_t data)
 int main()
 {
     yoctoSetLogWarning();
+    int status = yoctoInit();
 
-    int status = EXIT_SUCCESS;
-    /*
-    #ifdef LIBYOCTO_NETWORK
-       status = testConfigNetwork();
-    #endif //LIBYOCTO_NETWORK
-
-    #ifdef LIBYOCTO_WIFI
-       status = testConfigWifi();
-    #endif //LIBYOCTO_WIFI
-
-       status = testServiceSetTime();
-       status = testServiceNbRestart();
-       status = testServiceManage();
-
-    #ifdef LIBYOCTO_DIGITAL_INPUT_GPIO
-       status = testDigitalInput();
-    #endif //LIBYOCTO_DIGITAL_INPUT_GPIO
-
-    #ifdef LIBYOCTO_DIGITAL_OUTPUT_GPIO
-       status = testDigitalOutput();
-    #endif //LIBYOCTO_DIGITAL_OUTPUT_GPIO
-
-    #ifdef  LIBYOCTO_COMCONFIG_RBOX630
-       status = testCom();
-    #endif // LIBYOCTO_COMCONFIG_RBOX630
-
-       status = testLed();
-
- #ifdef LIBYOCTO_DIGITAL_INPUT_GPIO
+#ifdef LIBYOCTO_DIGITAL_INPUT
     status |= testDigitalInput();
- #endif // LIBYOCTO_DIGITAL_INPUT_GPIO
+#endif // LIBYOCTO_DIGITAL_INPUT
 
- #ifdef LIBYOCTO_DIGITAL_OUTPUT_GPIO
+#ifdef LIBYOCTO_DIGITAL_OUTPUT
     status |= testDigitalOutput();
- #endif // LIBYOCTO_DIGITAL_OUTPUT_GPIO
-    */
+#endif // LIBYOCTO_DIGITAL_OUTPUT
 
-    status = yoctoInit();
-
-    if (status >= 0)
-    {
-#ifdef LIBYOCTO_SNMP
-        status |= testSnmp();
-#endif
-
-#ifdef LIBYOCTO_SSL
-        status |= testSsl();
-#endif // LIBYOCTO_SSL
-
-#ifdef LIBYOCTO_NTP
-        status |= testConfigNtp();
-#endif // LIBYOCTO_NTP
-
-#ifdef LIBYOCTO_REMOTE_JOURNAL
-        status |= testConfigRemoteJournal();
-#endif // LIBYOCTO_REMOTE_JOURNAL
- 
-#ifdef LIBYOCTO_8021X
-        status |= testConfig8021x();
-#endif // LIBYOCTO_8021X
-   }
-
-    yoctoUninit();
     /*
-       if (status >= 0)
-       {
-           printf("Enter x to exit\n");
+        if (status >= 0)
+        {
+    #ifdef LIBYOCTO_SNMP
+            status |= testSnmp();
+    #endif
 
-           int index = 0;
-           // 0b00000, 0b10000, 0b10001, 0b10010, 0b10100, 0b11000
-           uint8_t dataToWrite[6] = {0x00, 0x10, 0x11, 0x12, 0x14, 0x18};
-           while (1)
-           {
-               uint8_t data;
+    #ifdef LIBYOCTO_SSL
+            status |= testSsl();
+    #endif // LIBYOCTO_SSL
 
-               printf("---INPUT---\n");
-               if (yoctoDigitalInputReadAll(&data) == 0)
-               {
-                   printBinary(data);
-               }
-               // printf("data=0X%02X", data);
+    #ifdef LIBYOCTO_NTP
+            status |= testConfigNtp();
+    #endif // LIBYOCTO_NTP
 
-               printf("---OUTPUT ALL---\n");
+    #ifdef LIBYOCTO_REMOTE_JOURNAL
+            status |= testConfigRemoteJournal();
+    #endif // LIBYOCTO_REMOTE_JOURNAL
 
-               if (yoctoDigitalOutputWriteAll(dataToWrite[index]) == 0)
-               {
-                   printBinary(dataToWrite[index]);
-               }
-               if (yoctoDigitalOutputReadAll(&data) == 0)
-               {
-                   printBinary(data);
-               }
-
-               printf("---OUTPUT SINGLE ON---\n");
-               for (int index = 0; index < 5; index++)
-               {
-                   yoctoDigitalOutputWrite(index, 1);
-                   if (yoctoDigitalOutputReadAll(&data) == 0)
-                   {
-                       printBinary(data);
-                   }
-               }
-               printf("---OUTPUT SINGLE OFF---\n");
-               for (int index = 0; index < 5; index++)
-               {
-                   yoctoDigitalOutputWrite(index, 0);
-                   if (yoctoDigitalOutputReadAll(&data) == 0)
-                   {
-                       printBinary(data);
-                   }
-               }
-
-               for (int index = 0; index < 5; index++)
-               {
-                   yoctoDigitalOutputRead(index, &data);
-                   printf("%d=%d\n", index, data);
-               }
-
-               if (++index == sizeof(dataToWrite))
-               {
-                   index = 0;
-               }
-
-               if (getchar() == 0x78)
-               {
-                   break;
-               }
-           }
+    #ifdef LIBYOCTO_8021X
+            status |= testConfig8021x();
+    #endif // LIBYOCTO_8021X
        }
-   */
+    */
+    yoctoUninit();
 
     return status;
 }

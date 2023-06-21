@@ -6,13 +6,13 @@
 #include <stdio.h>
 
 //From: meta-fareco/recipes-extended/libyocto/libyocto-config/systemd/chronyd.service.d/90-fareco.conf
-#define CONFIG_SERVICE_NTP_FILENAME "/etc/fareco/services/ntp"
+#define CONFIG_SERVICE_NTP_FILENAME     CONFIG_RWDIR_CONF"/services/ntp"
 
 //From: meta-fareco/recipes-extended/libyocto/libyocto-config/systemd/systemd-journal-upload.service.d/90-fareco.conf
-#define CONFIG_SERVICE_JOURNAL_FILENAME "/etc/fareco/services/journal-upload"
+#define CONFIG_SERVICE_JOURNAL_FILENAME CONFIG_RWDIR_CONF"/services/journal-upload"
 
 //From: meta-fareco/recipes-extended/libyocto/libyocto-config/systemd/wpa_supplicant-wired@.service.d/90-fareco.conf
-#define CONFIG_SERVICE_8021X_FILENAME "/etc/fareco/services/wpa-wired"
+#define CONFIG_SERVICE_8021X_FILENAME   CONFIG_RWDIR_CONF"/services/wpa-wired"
 
 static const char *_serviceName(ConfigService type)
 {

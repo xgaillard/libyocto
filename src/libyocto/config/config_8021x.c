@@ -6,11 +6,11 @@
 #include <stdio.h>
 
 // From: meta-fareco/recipes-extended/libyocto/libyocto-config/wpa_supplicant/wpa_supplicant-wired-eth0.conf
-#define CONFIG_8021X_WPA_FILENAME "/etc/fareco/wpa_supplicant/wpa_supplicant-wired-eth0.conf"
+#define CONFIG_8021X_WPA_FILENAME   CONFIG_RWDIR_CONF"/wpa_supplicant/wpa_supplicant-wired-eth0.conf"
 
-#define CONFIG_8021X_KEY_FILENAME "/etc/security/radius/private/radius.key.pem"
-#define CONFIG_8021X_CERT_FILENAME "/etc/security/radius/certs/radius.cert.pem"
-#define CONFIG_8021X_CA_FILENAME "/etc/security/radius/certs/ca.cert.pem"
+#define CONFIG_8021X_KEY_FILENAME   CONFIG_RWDIR_SECURE"/radius/private/radius.key.pem"
+#define CONFIG_8021X_CERT_FILENAME  CONFIG_RWDIR_SECURE"/radius/certs/radius.cert.pem"
+#define CONFIG_8021X_CA_FILENAME    CONFIG_RWDIR_SECURE"/radius/certs/ca.cert.pem"
 
 #define CONFIG_RADIUS_CONTENT "\
 ctrl_interface=/var/run/wpa_supplicant\n\

@@ -15,10 +15,10 @@
 #define CONFIG_SNMP_PASSWORD_MAXSIZE 32
 
 //From: meta-fareco/recipes-protocols/net-snmp/net-snmp_%.bbappend
-#define CONFIG_SNMP_FILENAME_SECURITY "/etc/fareco/net-snmp/snmpd.conf"
+#define CONFIG_SNMP_FILENAME_SECURITY   CONFIG_RWDIR_CONF"/net-snmp/snmpd.conf"
 
 //From: meta-fareco/recipes-protocols/net-snmp/net-snmp/snmpd.conf
-#define CONFIG_SNMP_FILENAME_USER "/etc/fareco/net-snmp/users.conf"
+#define CONFIG_SNMP_FILENAME_USER       CONFIG_RWDIR_CONF"/net-snmp/users.conf"
 
 int configSnmpWrite(const char *user, const char *auth, const char *priv, const char *view)
 {

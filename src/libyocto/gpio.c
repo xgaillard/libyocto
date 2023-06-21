@@ -8,6 +8,8 @@
 #include <gpiod.h>
 
 #if defined(RBOX630)
+// Digital input order: 151, 36, 12, 13, 37, 152, 150, 153
+
 struct gpiod_chip *gChips[3] = {NULL};
 struct gpiod_line_bulk gInputs[3];
 
@@ -35,13 +37,13 @@ static int _requestInput(struct gpiod_chip *chip, struct gpiod_line_bulk *bulk, 
 
     if (gpiod_chip_get_lines(chip, offsets, numOffset, bulk) < 0)
     {
-        LOGGER(LOGGER_LEVEL_ERROR, "Error getting lines for gpio chip");
+        LOGGER(LOGGER_LEVEL_ERROR, "Error getting lines for %s, offset %d", gpiod_chip_name(chip), numOffset);
         return -1;
     }
 
     if (gpiod_line_request_bulk_input_flags(bulk, "yocto_in", flags) < 0)
     {
-        LOGGER(LOGGER_LEVEL_ERROR, "Error requesting lines for gpio chip");
+        LOGGER(LOGGER_LEVEL_ERROR, "Error requesting lines for %s, offset %d", gpiod_chip_name(chip), numOffset);
         return -1;
     }
 
@@ -56,13 +58,13 @@ static int _requestOutput(struct gpiod_chip *chip, struct gpiod_line_bulk *bulk,
 
     if (gpiod_chip_get_lines(chip, offsets, numOffset, bulk) < 0)
     {
-        LOGGER(LOGGER_LEVEL_ERROR, "Error getting lines for gpio chip");
+        LOGGER(LOGGER_LEVEL_ERROR, "Error getting lines for %s, offset %d", gpiod_chip_name(chip), numOffset);
         return -1;
     }
 
     if (gpiod_line_request_bulk_output_flags(bulk, "yocto_out", flags, defaults) < 0)
     {
-        LOGGER(LOGGER_LEVEL_ERROR, "Error requesting lines for gpio chip");
+        LOGGER(LOGGER_LEVEL_ERROR, "Error requesting lines for %s, offset %d", gpiod_chip_name(chip), numOffset);
         return -1;
     }
 
@@ -89,21 +91,20 @@ int gpioInit()
         goto error;
     }
 
-    // Order: 151, 36, 12, 13, 37, 152, 150, 153
     unsigned int offsets0[GPIO_INPUT0_COUNT] = {12, 13};
-    if (_requestInput(gChips[0], &gInputs[0], offsets0, GPIO_INPUT0_COUNT, 0) < 0)
+    if (_requestInput(gChips[0], &gInputs[0], offsets0, GPIO_INPUT0_COUNT, GPIOD_LINE_REQUEST_FLAG_ACTIVE_LOW) < 0)
     {
         goto error;
     }
 
-    unsigned int offsets1[GPIO_INPUT1_COUNT] = {36, 37};
-    if (_requestInput(gChips[0], &gInputs[1], offsets1, GPIO_INPUT1_COUNT, GPIOD_LINE_REQUEST_FLAG_ACTIVE_LOW) < 0)
+    unsigned int offsets1[GPIO_INPUT1_COUNT] = {4, 5};  //{36, 37}
+    if (_requestInput(gChips[1], &gInputs[1], offsets1, GPIO_INPUT1_COUNT, GPIOD_LINE_REQUEST_FLAG_ACTIVE_LOW) < 0)
     {
         goto error;
     }
 
-    unsigned int offsets2[GPIO_INPUT2_COUNT] = {151, 152, 150, 153};
-    if (_requestInput(gChips[0], &gInputs[2], offsets2, GPIO_INPUT2_COUNT, GPIOD_LINE_REQUEST_FLAG_ACTIVE_LOW) < 0)
+    unsigned int offsets2[GPIO_INPUT2_COUNT] = {22, 23, 24, 25}; //{150, 151, 152, 153}
+    if (_requestInput(gChips[2], &gInputs[2], offsets2, GPIO_INPUT2_COUNT, GPIOD_LINE_REQUEST_FLAG_ACTIVE_LOW) < 0)
     {
         goto error;
     }
@@ -155,7 +156,7 @@ static void freeBulk(struct gpiod_line_bulk bulks[], size_t count)
         struct gpiod_line_bulk *bulk = &bulks[index];
 
         int lineCount = gpiod_line_bulk_num_lines(bulk);
-        LOGGER(LOGGER_LEVEL_DEBUG, "Freeing %d gpio lines", lineCount);
+        LOGGER(LOGGER_LEVEL_DEBUG, "Freeing %d gpio bulk lines", lineCount);
 
         if (lineCount > 0)
         {
@@ -188,7 +189,8 @@ void gpioUninit()
 static int _getData(struct gpiod_line_bulk *bulk, __u8 *data, int offset)
 {
     int lineCount = gpiod_line_bulk_num_lines(bulk);
-    assert(lineCount + offset < 8); // FIXME Check
+
+    assert(lineCount + offset <= 8);
 
     if (lineCount == 0)
     {
@@ -229,12 +231,22 @@ int gpioInputReadAll(__u8 *data)
         return -1;
     }
 
-    if (_getData(&gInputs[2], data, GPIO_INPUT1_COUNT) < 0)
+    if (_getData(&gInputs[2], data, GPIO_INPUT0_COUNT + GPIO_INPUT1_COUNT) < 0)
     {
         return -1;
     }
 
-    // FIXME Reorder
+    //Reorder the data
+    *data = \
+        ((*data & 0x01) << 2) | //12    -> 0x04
+        ((*data & 0x02) << 2) | //13    -> 0x08
+        ((*data & 0x04) >> 1) | //36    -> 0x02
+        ((*data & 0x08) << 1) | //37    -> 0x10
+        ((*data & 0x10) << 2) | //150   -> 0x40
+        ((*data & 0x20) >> 5) | //151   -> 0x01
+        ((*data & 0x40) >> 1) | //152   -> 0x20
+        ((*data & 0x80));       //153   -> 0x80
+
 #elif defined(RADIPV3)
     if (_getData(&gInputs[0], data, 0) < 0)
     {
@@ -302,7 +314,7 @@ int gpioOutputRead(int index, __u8 *on)
 static int _writeData(struct gpiod_line_bulk *bulk, __u8 data, int offset)
 {
     int lineCount = gpiod_line_bulk_num_lines(bulk);
-    assert(lineCount + offset < 8); // FIXME Check
+    assert(lineCount + offset <= 8);
 
     if (lineCount == 0)
     {
